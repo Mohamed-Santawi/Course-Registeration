@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Register - Course Registration System</title>
+    <link rel="stylesheet" th:href="@{/style.css}" />
+</head>
+<body>
+    <h2>Register</h2>
+    <div th:if="${error}" style="color:red;">[[${error}]]</div>
+    <div th:if="${success}" style="color:green;">[[${success}]]</div>
+    <form th:action="@{/register}" method="post" enctype="multipart/form-data">
+        <label>Username: <input type="text" name="username" /></label><br/>
+        <label>Password: <input type="password" name="password" /></label><br/>
+        <label>Email: <input type="email" name="email" /></label><br/>
+        <label>Full Name: <input type="text" name="fullName" /></label><br/>
+        <label>Student ID: <input type="text" name="studentId" /></label><br/>
+        <label>Profile Image: <input type="file" name="profileImage" /></label><br/>
+        <label>Program:
+            <select name="programId">
+                <option th:each="program : ${programs}" th:value="${program.id}" th:text="${program.name + ' - ' + program.year}"></option>
+            </select>
+        </label><br/>
+        <button type="submit">Register</button>
+    </form>
+    <p><a th:href="@{/login}">Back to Login</a></p>
+</body>
+</html>

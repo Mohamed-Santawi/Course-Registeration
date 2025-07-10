@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Manage Programs - Admin</title>
+</head>
+<body>
+    <h2>Programs</h2>
+    <table border="1">
+        <thead>
+            <tr><th>Name</th><th>Year</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+            <tr th:each="program : ${programs}">
+                <td th:text="${program.name}"></td>
+                <td th:text="${program.year}"></td>
+                <td>
+                    <form th:action="@{/admin/programs/delete}" method="post" style="display:inline;">
+                        <input type="hidden" name="programId" th:value="${program.id}" />
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <h3>Add Program</h3>
+    <form th:action="@{/admin/programs/add}" method="post">
+        <label>Name: <input type="text" name="name" required /></label><br/>
+        <label>Year: <input type="text" name="year" required /></label><br/>
+        <button type="submit">Add Program</button>
+    </form>
+    <a th:href="@{/admin}">Back to Dashboard</a>
+</body>
+</html>

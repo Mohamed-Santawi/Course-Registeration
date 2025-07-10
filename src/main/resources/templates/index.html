@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>Course Registration System - Home</title>
+    <link rel="stylesheet" th:href="@{/style.css}" />
+  </head>
+  <body>
+    <h1>Welcome to the Course Registration System</h1>
+    <nav>
+      <a th:href="@{/}">Home</a> | <a th:href="@{/login}">Login</a> |
+      <a th:href="@{/register}">Register</a> |
+      <a th:href="@{/courses}">Courses</a> |
+      <a
+        th:href="@{/admin}"
+        th:if="${#authorization.expression('hasRole(''ADMIN'')')}"
+        >Admin Dashboard</a
+      >
+    </nav>
+    <p>This is the landing page. Please login or register to continue.</p>
+  </body>
+</html>

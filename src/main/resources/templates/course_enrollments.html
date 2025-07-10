@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Course Enrollments - Admin</title>
+</head>
+<body>
+    <h2>Enrollments for <span th:text="${course.title}"></span></h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Student Name</th>
+                <th>Email</th>
+                <th>Enrollment Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="enrollment : ${enrollments}">
+                <td th:text="${enrollment.user.userProfile.fullName}"></td>
+                <td th:text="${enrollment.user.email}"></td>
+                <td th:text="${enrollment.enrollmentDate}"></td>
+            </tr>
+        </tbody>
+    </table>
+    <a th:href="@{/admin}">Back to Dashboard</a>
+</body>
+</html>

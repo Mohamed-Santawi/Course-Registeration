@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>Edit Course - Admin</title>
+  </head>
+  <body>
+    <h2>Edit Course</h2>
+    <form th:action="@{/admin/course/edit}" method="post">
+      <input type="hidden" name="id" th:value="${course.id}" />
+      <label
+        >Title:
+        <input
+          type="text"
+          name="title"
+          th:value="${course.title}"
+          required /></label
+      ><br />
+      <label
+        >Description:
+        <input
+          type="text"
+          name="description"
+          th:value="${course.description}" /></label
+      ><br />
+      <label
+        >Instructor:
+        <input
+          type="text"
+          name="instructor"
+          th:value="${course.instructor}" /></label
+      ><br />
+      <label
+        >Capacity:
+        <input
+          type="number"
+          name="capacity"
+          th:value="${course.capacity}"
+          required /></label
+      ><br />
+      <label
+        >Programs:
+        <select name="programIds" multiple required>
+          <option
+            th:each="program : ${programs}"
+            th:value="${program.id}"
+            th:text="${program.name + ' - ' + program.year}"
+            th:selected="${course.programs.contains(program)}"
+          ></option>
+        </select> </label
+      ><br />
+      <button type="submit">Update Course</button>
+    </form>
+    <a th:href="@{/admin}">Back to Dashboard</a>
+  </body>
+</html>
