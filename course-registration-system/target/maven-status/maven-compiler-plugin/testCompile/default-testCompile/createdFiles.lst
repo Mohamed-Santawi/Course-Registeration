@@ -1,0 +1,3 @@
+com\college\service\UserServiceTest.class
+com\college\controller\CourseControllerTest.class
+com\college\controller\home\HomeControllerTest.class

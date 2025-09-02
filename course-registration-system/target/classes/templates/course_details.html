@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title th:text="${course.title} + ' - Details'">Course Details</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+  </head>
+  <body>
+    <div th:replace="~{navbar :: navbar}"></div>
+    <div class="container py-5">
+      <div class="card shadow-lg">
+        <div class="card-body">
+          <h2 class="card-title" th:text="${course.title}"></h2>
+          <h5 class="text-muted mb-3" th:text="${course.code}"></h5>
+          <p th:text="${course.description}"></p>
+          <div class="alert alert-info mt-3" th:if="${capacity != null}">
+            <strong>Seats:</strong>
+            <span th:text="${capacity}"></span>
+            <span th:if="${seatsLeft != null}"
+              >| <strong>Seats left:</strong>
+              <span th:text="${seatsLeft}"></span
+            ></span>
+          </div>
+          <div
+            class="alert alert-danger mt-3"
+            th:if="${seatsLeft != null and seatsLeft <= 0}"
+          >
+            <i class="fas fa-exclamation-triangle"></i> This course is full. No
+            more seats available.
+          </div>
+          <a th:href="@{/courses}" class="btn btn-outline-primary mt-3"
+            >Back to Courses</a
+          >
+          <div class="mt-4 text-center">
+            <div th:if="${alreadyEnrolled}">
+              <div class="alert alert-warning mb-3">
+                <i class="fas fa-info-circle"></i> You are already enrolled in
+                this course.
+              </div>
+            </div>
+            <button
+              class="btn btn-success btn-lg"
+              th:disabled="${!isEligibleToEnroll or hasScheduleConflict or (seatsLeft != null and seatsLeft <= 0) or alreadyEnrolled}"
+              id="enrollBtn"
+              type="button"
+            >
+              <i class="fas fa-user-plus"></i> Enroll in this Course
+            </button>
+          </div>
+          <!-- Success/Failure Modal -->
+          <div
+            class="modal fade"
+            id="enrollResultModal"
+            tabindex="-1"
+            aria-labelledby="enrollResultModalLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                  <h5 class="modal-title" id="enrollResultModalLabel">
+                    <i class="fas fa-info-circle"></i> Enrollment Status
+                  </h5>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <div class="modal-body text-center" id="enrollResultBody"></div>
+                <div class="modal-footer justify-content-center">
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Not Eligible Modal -->
+          <div
+            class="modal fade"
+            id="notEligibleModal"
+            tabindex="-1"
+            aria-labelledby="notEligibleModalLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                  <h5 class="modal-title" id="notEligibleModalLabel">
+                    <i class="fas fa-ban"></i> Not Eligible
+                  </h5>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <div class="modal-body text-center">
+                  <span class="display-1 text-danger"
+                    ><i class="fas fa-exclamation-triangle"></i
+                  ></span>
+                  <h4 class="mt-3 fw-bold">
+                    You are not eligible to enroll in this course.
+                  </h4>
+                  <p class="mb-0 text-secondary">
+                    Only courses for your registered program and year are
+                    allowed.
+                  </p>
+                </div>
+                <div class="modal-footer justify-content-center">
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Schedule Conflict Modal -->
+          <div
+            class="modal fade"
+            id="conflictModal"
+            tabindex="-1"
+            aria-labelledby="conflictModalLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header bg-warning text-dark">
+                  <h5 class="modal-title" id="conflictModalLabel">
+                    <i class="fas fa-exclamation-triangle"></i> Schedule
+                    Conflict
+                  </h5>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <div class="modal-body text-center">
+                  <span class="display-1 text-warning"
+                    ><i class="fas fa-exclamation-triangle"></i
+                  ></span>
+                  <h4 class="mt-3 fw-bold">
+                    You cannot enroll in this course due to a schedule conflict
+                    with your current enrollments.
+                  </h4>
+                  <p class="mb-0 text-secondary">
+                    Please choose another course or drop a conflicting course.
+                  </p>
+                </div>
+                <div class="modal-footer justify-content-center">
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
+          <script>
+            document.addEventListener('DOMContentLoaded', function() {
+              var enrollBtn = document.getElementById('enrollBtn');
+              if (enrollBtn) {
+                enrollBtn.addEventListener('click', function() {
+                  var csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+                  var csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+                  var headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
+                  headers[csrfHeader] = csrfToken;
+                  fetch('/api/courses/enroll', {
+                    method: 'POST',
+                    headers: headers,
+                    body: 'courseId=' + [[${course.id}]]
+                  })
+                  .then(response => response.json())
+                  .then(data => {
+                    var modal = new bootstrap.Modal(document.getElementById('enrollResultModal'));
+                    var body = document.getElementById('enrollResultBody');
+                    if (data.success) {
+                      body.innerHTML = '<span class="text-success display-4"><i class="fas fa-check-circle"></i></span><h4 class="mt-3">' + data.message + '</h4>';
+                    } else {
+                      body.innerHTML = '<span class="text-danger display-4"><i class="fas fa-times-circle"></i></span><h4 class="mt-3">' + (data.error || 'Enrollment failed.') + '</h4>';
+                    }
+                    modal.show();
+                  });
+                });
+              }
+            });
+          </script>
+        </div>
+      </div>
+    </div>
+    <footer class="bg-primary text-white text-center py-3 mt-auto">
+      <div class="container">
+        &copy;
+        <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}"></span>
+        College Course Registration System
+      </div>
+    </footer>
+  </body>
+</html>

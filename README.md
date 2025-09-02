@@ -1,55 +1,58 @@
-HEAD
-# Course-Registeration
+# College Course Registration System
 
-# Course Registration System
+## Prerequisites
 
-A Spring Boot MVC web application for university course registration and management.
+- Java 17+ (recommended: Java 21)
+- Maven
+- Node.js & npm (for frontend)
+- MySQL (e.g., via XAMPP/phpMyAdmin)
 
-## Features
+## Backend Setup
 
-- Student and admin roles
-- Course registration, schedule management, and enrollment conflict detection
-- Admin dashboard for managing courses, programs, users, and schedules
-- Responsive, RTL-friendly UI (Arabic support)
-- REST API for SPA-style enrollment
-- MySQL database, JPA, Spring Security, Thymeleaf
+1. **Configure Database**
 
-## Setup
+   - Create a database named `college_db` in MySQL.
+   - Update `src/main/resources/application.properties` with your MySQL username and password if needed.
 
-1. **Clone the repository**
-2. **Configure MySQL**
-   - Create a database named `ex4`
-   - Update `src/main/resources/application.properties` with your MySQL username and password
-3. **Build and run**
+2. **Database Initialization**
+
+   - On first run, the application will automatically create an **admin account** if it does not exist:
+     - Username: `admin`
+     - Password: `admin` (please change after first login)
+     - Role: `ADMIN`
+   - **No personal or sensitive data is included.**
+   - The app will not create duplicate admin accounts if one already exists.
+
+3. **(Optional) Import SQL Snapshot for Demo/Testing**
+
+   - To populate the database with demo data, import the provided SQL snapshot file (e.g., `college_db_snapshot.sql`) using phpMyAdmin or the MySQL CLI:
+     - In phpMyAdmin: Select your database > Import > Choose file > Start import.
+   - This is **not required** for the app to start, but is useful for testing with lots of data.
+
+4. **Build and Run Backend**
    ```sh
-   mvn clean package
-   java -jar target/course-registration-system-0.0.1-SNAPSHOT.jar
+   cd course-registration-system
+   mvn clean install
+   mvn spring-boot:run
    ```
-4. **Access the app**
-   - Visit [http://localhost:8080](http://localhost:8080)
 
-## Testing
+## Frontend Setup
 
-- **Unit and integration tests:**
-  ```sh
-  mvn test
-  ```
-
-## Docker Deployment
-
-1. **Build the Docker image:**
+1. **Install dependencies and run**
    ```sh
-   docker build -t course-registration-system .
+   cd frontend
+   npm install
+   npm start
    ```
-2. **Run the container:**
-   ```sh
-   docker run -p 8080:8080 --env SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3306/ex4 --env SPRING_DATASOURCE_USERNAME=root --env SPRING_DATASOURCE_PASSWORD=your_mysql_password course-registration-system
-   ```
-   - Adjust MySQL connection details as needed.
+   - The frontend will run on [http://localhost:3000](http://localhost:3000) by default.
+
+## Security & Privacy
+
+- **Do not include any personal details** (e.g., passwords, national IDs, API keys) in your code or submissions.
+- After the course, remove any API keys or sensitive data from your project.
 
 ## Notes
 
-- Default admin user: `admin` (set password hash in DataInitializer)
-- Profile image uploads are stored in the `uploads` directory
-- For production, set secure passwords and review security settings
- 2bac376 (first)
+- The backend will always start with at least the admin account if the DB is empty.
+- For a full demo, use the SQL snapshot to pre-populate the database.
+- If you have questions or issues, check the logs or contact the project maintainer.

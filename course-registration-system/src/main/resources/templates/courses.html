@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>Courses</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    />
+    <style>
+      body {
+        background: linear-gradient(135deg, #e0e7ff 0%, #f8fafc 100%);
+        min-height: 100vh;
+      }
+      .courses-hero {
+        background: url("/images/courses3.png") center/cover no-repeat;
+        min-height: 260px;
+        border-radius: 1.5rem;
+        box-shadow: 0 8px 32px rgba(60, 60, 120, 0.12);
+        position: relative;
+        margin-bottom: 2rem;
+      }
+      .courses-hero-overlay {
+        background: rgba(30, 41, 59, 0.45);
+        border-radius: 1.5rem;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+      }
+      .search-bar {
+        max-width: 500px;
+        margin: 0 auto 2rem auto;
+        box-shadow: 0 2px 12px rgba(60, 60, 120, 0.08);
+      }
+      .course-card {
+        border: none;
+        border-radius: 1.25rem;
+        box-shadow: 0 4px 24px rgba(60, 60, 120, 0.1);
+        transition: transform 0.2s, box-shadow 0.2s;
+        background: #fff;
+        overflow: hidden;
+      }
+      .course-card:hover {
+        transform: translateY(-6px) scale(1.03);
+        box-shadow: 0 8px 32px #b3c6ff;
+      }
+      .course-img {
+        width: 100%;
+        height: 160px;
+        object-fit: cover;
+        border-top-left-radius: 1.25rem;
+        border-top-right-radius: 1.25rem;
+      }
+      .no-courses {
+        border-radius: 1.25rem;
+        color: #fff;
+        padding: 2rem;
+        text-shadow: 0 2px 8px #333;
+      }
+    </style>
+  </head>
+  <body class="bg-light">
+    <div th:replace="~{navbar :: navbar}"></div>
+    <div class="container py-4">
+      <div
+        class="courses-hero position-relative animate__animated animate__fadeInDown"
+      >
+        <div class="courses-hero-overlay">
+          <h1 class="display-5 fw-bold mb-2">
+            <i class="bi bi-journal-bookmark"></i> Explore Courses
+          </h1>
+          <p class="lead mb-0">
+            Find and enroll in courses for your program and year
+          </p>
+        </div>
+      </div>
+      <form method="get" action="/courses" class="row g-3 align-items-end mb-4">
+        <div class="col-md-3">
+          <label for="programName" class="form-label">Program</label>
+          <select
+            class="form-select"
+            name="programName"
+            id="programName"
+            required
+          >
+            <option value="" th:selected="${selectedProgramName == null}">
+              Select Program
+            </option>
+            <th:block th:each="name : ${programNames}">
+              <option
+                th:value="${name}"
+                th:text="${name}"
+                th:selected="${selectedProgramName == name}"
+              ></option>
+            </th:block>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <label for="year" class="form-label">Year</label>
+          <select class="form-select" name="year" id="year" required>
+            <option value="" th:selected="${selectedYear == null}">
+              Select Year
+            </option>
+            <option
+              value="1st Year"
+              th:selected="${selectedYear == '1st Year'}"
+            >
+              1st Year
+            </option>
+            <option
+              value="2nd Year"
+              th:selected="${selectedYear == '2nd Year'}"
+            >
+              2nd Year
+            </option>
+            <option
+              value="3rd Year"
+              th:selected="${selectedYear == '3rd Year'}"
+            >
+              3rd Year
+            </option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <label for="semester" class="form-label">Semester</label>
+          <select class="form-select" name="semester" id="semester" required>
+            <option value="" th:selected="${selectedSemester == null}">
+              Select Semester
+            </option>
+            <th:block th:each="s : ${semesters}">
+              <option
+                th:value="${s}"
+                th:text="${s}"
+                th:selected="${selectedSemester == s}"
+              ></option>
+            </th:block>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <button type="submit" class="btn btn-primary w-100">Search</button>
+        </div>
+        <div class="col-md-3 text-end">
+          <a
+            th:if="${selectedYear != null and selectedSemester != null}"
+            th:href="@{'/lecture-schedule'(year=${selectedYear},semester=${selectedSemester})}"
+            class="btn btn-outline-secondary"
+            >Lecture Schedule</a
+          >
+          <a
+            th:if="${selectedYear == null or selectedSemester == null}"
+            th:href="@{'/lecture-schedule'}"
+            class="btn btn-outline-secondary"
+            >Lecture Schedule</a
+          >
+        </div>
+      </form>
+
+      <div class="row">
+        <!-- Always present, but only visible if no search or no results -->
+        <div
+          class="col-12"
+          th:if="${selectedProgramName != null and selectedYear != null and selectedSemester != null and #lists.isEmpty(courses)}"
+        >
+          <div
+            class="no-courses animate__animated animate__fadeIn border border-danger rounded-4 p-4 bg-white shadow-lg text-center position-relative"
+          >
+            <span class="fs-1 text-danger"
+              ><i class="fa-solid fa-circle-exclamation"></i
+            ></span>
+            <h4 class="mt-3 fw-bold text-danger">
+              No courses found for your search or program.
+            </h4>
+            <p class="mb-0 text-secondary">
+              Try a different search or check back later.
+            </p>
+            <div
+              class="position-absolute top-0 end-0 m-3 animate__animated animate__bounce animate__infinite"
+            >
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </div>
+          </div>
+        </div>
+        <!-- Courses grid -->
+        <div
+          class="row row-cols-1 row-cols-md-3 g-4"
+          th:if="${!#lists.isEmpty(courses)}"
+        >
+          <div class="col" th:each="course : ${courses}">
+            <div th:if="${course.title == 'No course available for this slot'}">
+              <div
+                class="card h-100 shadow border-danger course-card bg-light text-center"
+              >
+                <div
+                  class="card-body d-flex flex-column justify-content-center align-items-center"
+                >
+                  <div class="display-3 mb-2 text-danger">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                  </div>
+                  <h5
+                    class="card-title text-danger"
+                    th:text="${course.title}"
+                  ></h5>
+                  <p class="card-text text-muted">
+                    No course data for this slot.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <a
+              th:if="${course.title != 'No course available for this slot'}"
+              th:href="@{'/courses/' + ${course.id}}"
+              class="text-decoration-none"
+            >
+              <div class="card h-100 shadow course-card">
+                <div class="card-body text-center">
+                  <div class="display-3 mb-2">
+                    <span
+                      th:switch="${course.firstProgramName != null ? course.firstProgramName : 'Other'}"
+                    >
+                      <i
+                        th:case="'Electrical Engineering'"
+                        class="fa-solid fa-bolt text-warning"
+                      ></i>
+                      <i
+                        th:case="'Computer Science'"
+                        class="fa-solid fa-computer text-info"
+                      ></i>
+                      <i
+                        th:case="'Business Administration'"
+                        class="fa-solid fa-briefcase text-success"
+                      ></i>
+                      <i
+                        th:case="*"
+                        class="fa-solid fa-book text-secondary"
+                      ></i>
+                    </span>
+                  </div>
+                  <h5 class="card-title" th:text="${course.title}"></h5>
+                  <p class="card-text text-muted" th:text="${course.code}"></p>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

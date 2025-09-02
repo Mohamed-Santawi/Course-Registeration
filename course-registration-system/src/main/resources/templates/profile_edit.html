@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>Edit Profile - Course Registration System</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <style>
+      .is-invalid {
+        border-color: #dc3545 !important;
+        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+      }
+      .invalid-feedback {
+        color: #dc3545;
+        font-size: 0.9em;
+        margin-top: 0.25rem;
+        display: none;
+      }
+      .show-feedback {
+        display: block;
+      }
+    </style>
+  </head>
+  <body class="bg-light d-flex flex-column min-vh-100">
+    <div th:replace="~{navbar :: navbar}"></div>
+    <!-- Main Content -->
+    <div
+      class="container flex-grow-1 d-flex justify-content-center align-items-center"
+    >
+      <div class="card shadow p-4 w-100" style="max-width: 500px">
+        <h2 class="mb-4 text-center">Edit Profile</h2>
+        <form
+          th:action="@{/profile/edit}"
+          method="post"
+          enctype="multipart/form-data"
+        >
+          <div class="mb-3 text-center">
+            <img
+              th:src="${profileImageUrl}"
+              alt="Profile Image"
+              class="img-thumbnail mb-2"
+              style="max-width: 150px; max-height: 150px"
+              th:if="${profileImageUrl}"
+            />
+            <input
+              type="file"
+              name="profileImage"
+              id="profileImage"
+              class="form-control"
+              accept="image/*"
+            />
+            <small class="text-muted">Max size: 1MB</small>
+            <span class="invalid-feedback" id="imageError"></span>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Full Name</label>
+            <input
+              type="text"
+              name="fullName"
+              class="form-control"
+              th:value="${fullName}"
+              required
+              pattern="[A-Za-z ]{2,}"
+              minlength="2"
+              title="Only letters and spaces, at least 2 characters"
+            />
+            <span class="invalid-feedback" id="fullNameError"></span>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input
+              type="email"
+              name="email"
+              class="form-control"
+              th:value="${email}"
+              required
+              pattern="^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$"
+              title="Enter a valid email address"
+            />
+            <span class="invalid-feedback" id="emailError"></span>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Student ID</label>
+            <input
+              type="number"
+              name="studentId"
+              class="form-control"
+              th:value="${studentId}"
+              required
+              min="1"
+              pattern="\d*"
+              inputmode="numeric"
+            />
+            <span class="invalid-feedback" id="studentIdError"></span>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Program</label>
+            <select name="program" class="form-control" required>
+              <option value="" disabled>Select your program</option>
+              <th:block th:each="name : ${programNames}">
+                <option
+                  th:value="${name}"
+                  th:text="${name}"
+                  th:selected="${program == name}"
+                ></option>
+              </th:block>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Year</label>
+            <select class="form-select" name="year" required>
+              <option value="1st Year" th:selected="${year == '1st Year'}">
+                1st Year
+              </option>
+              <option value="2nd Year" th:selected="${year == '2nd Year'}">
+                2nd Year
+              </option>
+              <option value="3rd Year" th:selected="${year == '3rd Year'}">
+                3rd Year
+              </option>
+            </select>
+          </div>
+          <div class="d-grid">
+            <button type="submit" class="btn btn-success">Save Changes</button>
+          </div>
+        </form>
+        <div class="text-center mt-3">
+          <a th:href="@{/profile}" class="btn btn-secondary">Cancel</a>
+        </div>
+      </div>
+    </div>
+    <!-- Footer -->
+    <footer class="bg-primary text-white text-center py-3 mt-auto">
+      <div class="container">
+        &copy;
+        <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}"></span>
+        College Course Registration System
+      </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Helper to show/hide error
+        function setInvalid(input, errorSpan, message) {
+          input.classList.add("is-invalid");
+          errorSpan.textContent = message;
+          errorSpan.classList.add("show-feedback");
+        }
+        function setValid(input, errorSpan) {
+          input.classList.remove("is-invalid");
+          errorSpan.textContent = "";
+          errorSpan.classList.remove("show-feedback");
+        }
+        // Email
+        var email = document.querySelector('input[name="email"]');
+        var emailError = document.getElementById("emailError");
+        if (email) {
+          email.oninvalid = function (e) {
+            if (!e.target.value) {
+              setInvalid(email, emailError, "Email is required.");
+              e.target.setCustomValidity("Email is required.");
+            } else {
+              setInvalid(
+                email,
+                emailError,
+                "Please enter a valid email address."
+              );
+              e.target.setCustomValidity("Please enter a valid email address.");
+            }
+          };
+          email.oninput = function (e) {
+            setValid(email, emailError);
+            e.target.setCustomValidity("");
+          };
+        }
+        // Full Name
+        var fullName = document.querySelector('input[name="fullName"]');
+        var fullNameError = document.getElementById("fullNameError");
+        if (fullName) {
+          fullName.oninvalid = function (e) {
+            if (!e.target.value) {
+              setInvalid(fullName, fullNameError, "Full Name is required.");
+              e.target.setCustomValidity("Full Name is required.");
+            } else {
+              setInvalid(
+                fullName,
+                fullNameError,
+                "Full Name must contain only letters and spaces (min 2 characters)."
+              );
+              e.target.setCustomValidity(
+                "Full Name must contain only letters and spaces (min 2 characters)."
+              );
+            }
+          };
+          fullName.oninput = function (e) {
+            setValid(fullName, fullNameError);
+            e.target.setCustomValidity("");
+          };
+        }
+        // Student ID
+        var studentId = document.querySelector('input[name="studentId"]');
+        var studentIdError = document.getElementById("studentIdError");
+        if (studentId) {
+          studentId.oninvalid = function (e) {
+            if (!e.target.value) {
+              setInvalid(studentId, studentIdError, "Student ID is required.");
+              e.target.setCustomValidity("Student ID is required.");
+            } else {
+              setInvalid(
+                studentId,
+                studentIdError,
+                "Student ID must be numeric."
+              );
+              e.target.setCustomValidity("Student ID must be numeric.");
+            }
+          };
+          studentId.oninput = function (e) {
+            setValid(studentId, studentIdError);
+            e.target.setCustomValidity("");
+          };
+        }
+        // Image size check
+        var imageInput = document.getElementById("profileImage");
+        var imageError = document.getElementById("imageError");
+        if (imageInput) {
+          imageInput.addEventListener("change", function (e) {
+            if (e.target.files[0] && e.target.files[0].size > 1024 * 1024) {
+              setInvalid(
+                imageInput,
+                imageError,
+                "Image is too large! Max size is 1MB."
+              );
+              e.target.value = "";
+            } else {
+              setValid(imageInput, imageError);
+            }
+          });
+        }
+      });
+    </script>
+  </body>
+</html>

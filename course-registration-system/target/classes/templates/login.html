@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>Login - Course Registration System</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <!-- Debug: plain JavaScript -->
+    <script>
+      console.log("login.html loaded. Window location:", window.location.href);
+      var link = document.querySelector('link[rel="stylesheet"]');
+      if (link) {
+        console.log("First stylesheet href:", link.getAttribute("href"));
+      }
+    </script>
+  </head>
+  <body class="bg-light d-flex flex-column min-vh-100">
+    <div th:replace="~{navbar :: navbar}"></div>
+    <!-- Main Content -->
+    <div
+      class="container flex-grow-1 d-flex justify-content-center align-items-center"
+    >
+      <div class="card shadow p-4 w-100" style="max-width: 400px">
+        <h2 class="mb-4 text-center">Login</h2>
+        <div th:if="${param.error}" class="alert alert-danger">
+          Invalid username or password. Please try again.
+        </div>
+        <div th:if="${param.logout}" class="alert alert-success">
+          You have been logged out successfully.
+        </div>
+        <div
+          th:if="${success}"
+          class="alert alert-success"
+          th:text="${success}"
+        ></div>
+        <div
+          th:if="${error}"
+          class="alert alert-danger"
+          th:text="${error}"
+        ></div>
+        <!-- Removed uploaded image display -->
+        <form th:action="@{/login}" method="post">
+          <div class="mb-3">
+            <label class="form-label">Username</label>
+            <input type="text" name="username" class="form-control" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input type="password" name="password" class="form-control" />
+          </div>
+          <button type="submit" class="btn btn-primary w-100">Login</button>
+        </form>
+        <div class="text-center mt-3">
+          <a th:href="@{/register}" class="btn btn-primary">Register</a>
+        </div>
+      </div>
+    </div>
+    <!-- Footer -->
+    <footer class="bg-primary text-white text-center py-3 mt-auto">
+      <div class="container">
+        &copy;
+        <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}"></span>
+        College Course Registration System
+      </div>
+    </footer>
+  </body>
+</html>
